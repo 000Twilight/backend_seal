@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>
+    Backend SEAL - Simple Q&A Form
+  </title>
+
+  <link rel="preconnect" href="https://fonts.bunny.net" />
+  <link href="https://fonts.bunny.net/css?family=instrument-sans:400,400i,500,500i,600,600i,700,700i"
+    rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Instrument Sans", "sans-serif"]
+          },
+          colors: {
+            primary: {
+              DEFAULT: "#5A45FF",
+              lighter: "#a599ff"
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+  @stack('dumper')
+</head>
+
+<body class="min-h-screen w-screen font-sans">
+  <div class="pt-4 h-full flex flex-col">
+    <!-- Simple Q&A Form -->
+    <div class="flex justify-center mt-8">
+      <form id="qa-form" class="bg-white p-6 rounded shadow-md w-full max-w-xl border border-sand-7">
+        <input type="hidden" id="csrf-token" name="_csrf" value="{{ csrfToken }}" />
+        <label for="question" class="block mb-2 font-semibold">Ask a question:</label>
+        <input type="text" id="question" name="question" class="w-full border border-sand-6 rounded px-3 py-2 mb-4"
+          required />
+        <button type="submit"
+          class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-lighter transition">Send</button>
+        <div id="answer-box" class="mt-4 text-sand-12"></div>
+      </form>
+    </div>
+  </div>
+  <script>
+    // Place script at the end of body to ensure DOM is loaded
+    const form = document.getElementById('qa-form');
+    if (form) {
+      const answerBox = document.getElementById('answer-box');
+      const csrfToken = document.getElementById('csrf-token').value;
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        answerBox.textContent = 'Loading...';
+        const question = form.question.value;
+        console.log('Question submitted:', question);
+        console.log('CSRF Token:', csrfToken);
+        console.log('Question Json:', JSON.stringify({ question }));
+        // filepath: /Users/limtjiesiong/Documents/Mario/Projects/SEAL/backend_seal/resources/views/pages/home.edge
+        // ...existing code...
+        try {
+          const res = await fetch('/questions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-csrf-token': csrfToken
+            },
+            body: JSON.stringify({ question })
+          });
+          let data;
+          const contentType = res.headers.get('content-type');
+          if (res.ok && contentType && contentType.includes('application/json')) {
+            data = await res.json();
+            answerBox.textContent = data.answer || 'No answer received.';
+          } else {
+            const text = await res.text();
+            answerBox.textContent = `Error ${res.status}: ${res.statusText}\n${text}`;
+            console.error('Unexpected response format:', text);
+            console.error('Expected JSON but received:', contentType);
+            console.error('Response:', res);
+          }
+        } catch (err) {
+          answerBox.textContent = 'Error: ' + err.message;
+        }
+        // ...existing code...
+      });
+    }
+  </script>
+</body>
+
+</html>

@@ -11,6 +11,9 @@ export default class Messages extends BaseModel {
   @column()
   declare message: string
 
+  @column()
+  declare session_id: string
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

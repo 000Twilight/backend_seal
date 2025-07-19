@@ -1,27 +1,23 @@
 import { HttpContext } from '@adonisjs/core/http'
 import Conversation from '#models/conversation'
 import Messages from '#models/messages'
-import { v4 as uuidv4 } from 'uuid'
 import axios from 'axios'
 
 export default class QuestionsController {
   public async send({ request, response }: HttpContext) {
     try {
-      const { question, session_id: clientSessionId } = request.only(['question', 'session_id'])
+      const question = request.input('question')      
+      const session_id = request.input('session_id')
       if (!question) {
         return response.badRequest({ error: 'Question is required' })
       }
 
-      // Use existing session_id or create new
-      let session_id = clientSessionId
-      let conversation
-
-      if (session_id) {
-        conversation = await Conversation.query().where('session_id', session_id).first()
-      }
+      // Find or create conversation based on session_id
+      let conversation = await Conversation.query()
+        .where('session_id', session_id)
+        .first()
 
       if (!conversation) {
-        session_id = uuidv4()
         conversation = await Conversation.create({
           session_id,
           last_messages: question,
@@ -32,6 +28,7 @@ export default class QuestionsController {
       const userMessage = await Messages.create({
         sender_type: 'user',
         message: question,
+        session_id,
       })
 
       // Optionally: associate message with conversation (if you have a relation)
@@ -57,6 +54,7 @@ export default class QuestionsController {
       await Messages.create({
         sender_type: 'bot',
         message: botAnswer,
+        session_id,
       })
 
       // Update conversation last message

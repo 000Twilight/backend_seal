@@ -9,6 +9,8 @@ export default class extends BaseSchema {
       table.enum('sender_type', ['user', 'bot']).notNullable()
       table.text('message').notNullable()
 
+      table.uuid('session_id').notNullable()
+
       table.timestamp('created_at')
       table.timestamp('updated_at')
     })

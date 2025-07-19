@@ -11,7 +11,6 @@ export default class ConversationsController {
         .where('last_messages', 'like', `%${search}%`)
     }
     const conversations = await query.orderBy('created_at', 'desc')
-    // If HTML requested, render view; else return JSON
     if (request.accepts(['html', 'json']) === 'html') {
       return view.render('pages/conversation', { conversations, search })
     }
@@ -26,10 +25,10 @@ export default class ConversationsController {
     if (!conversation) {
       return response.notFound({ error: 'Conversation not found' })
     }
+    // Fetch all messages for this session_id, ordered by creation
     const messages = await Messages.query()
-      .join('conversations', 'messages.id', '=', 'conversations.messages_id')
-      .where('conversations.session_id', conversation.session_id)
-      .select('messages.*')
+      .where('session_id', conversation.session_id)
+      .orderBy('created_at', 'asc')
     if (request.accepts(['html', 'json']) === 'html') {
       return view.render('pages/conversation_messages', { conversation, messages })
     }

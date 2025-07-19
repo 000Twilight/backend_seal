@@ -7,11 +7,13 @@
 |
 */
 
+import HomeController from '#controllers/HomeController'
 import router from '@adonisjs/core/services/router'
 import QuestionsController from '#controllers/QuestionsController'
 import ConversationsController from '#controllers/ConversationsController'
 
-router.on('/').render('pages/home')
+// Home page now uses controller to generate session_id
+router.get('/', [HomeController, 'index'])
 
 // Questions endpoint
 router.post('/questions', [QuestionsController, 'send'])

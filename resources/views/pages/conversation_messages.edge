@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Conversation Messages</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ["Instrument Sans", "sans-serif"]
+                    },
+                    colors: {
+                        primary: {
+                            DEFAULT: "#5A45FF",
+                            lighter: "#a599ff"
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+
+<body class="min-h-screen w-screen font-sans bg-sand-1">
+    <div class="pt-4 h-full flex flex-col items-center">
+        <div class="flex flex-col items-center mt-8 w-full">
+            <a href="/conversation"
+                class="mb-6 px-4 py-2 rounded bg-primary text-white hover:bg-primary-lighter transition shadow inline-block">
+                Back to Conversation List
+            </a>
+            <div class="bg-white p-6 rounded shadow-md w-full max-w-xl border border-sand-7">
+                <h1 class="text-2xl font-bold mb-4 text-primary">
+                    Messages for Conversation 
+                    <br>{{ conversation.session_id }}
+                </h1>
+                <ul>
+                    @each(message in messages)
+                    <li class="mb-3 p-3 border border-sand-3 rounded bg-sand-2">
+                        <span class="font-semibold text-primary">{{ message.sender_type }}:</span>
+                        <span class="text-sand-12">{{ message.message }}</span>
+                    </li>
+                    @endeach
+                </ul>
+                @if(!messages || !messages.length)
+                <div class="text-sand-12">No messages found.</div>
+                @endif
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

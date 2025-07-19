@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Conversations List</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ["Instrument Sans", "sans-serif"]
+                    },
+                    colors: {
+                        primary: {
+                            DEFAULT: "#5A45FF",
+                            lighter: "#a599ff"
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+
+<body class="min-h-screen w-screen font-sans bg-sand-1">
+    <div class="pt-4 h-full flex flex-col items-center">
+        <div class="flex flex-col items-center mt-8 w-full">
+            <a href="/"
+                class="mb-6 px-4 py-2 rounded bg-primary text-white hover:bg-primary-lighter transition shadow inline-block">
+                Back to Home
+            </a>
+            <div class="bg-white p-6 rounded shadow-md w-full max-w-xl border border-sand-7">
+                <h1 class="text-2xl font-bold mb-4 text-primary">Conversations</h1>
+                <form method="GET" action="/conversation" class="flex mb-4 gap-2">
+                    <input type="text" name="search" placeholder="Search by Last Messages"
+                        value="{{ search ? search : '' }}" class="flex-1 border border-sand-6 rounded px-3 py-2" />
+                    <button type="submit"
+                        class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-lighter transition">Search</button>
+                </form>
+                <ul>
+                    @if(conversations && conversations.length)
+                    @each(conversation in conversations)
+                    <li class="mb-4 p-3 border border-sand-3 rounded hover:bg-sand-2 transition">
+                        <a href="/conversation/{{ conversation.id }}"
+                            class="font-semibold text-primary hover:underline">
+                            ID : {{ conversation.id }} -
+                            Session ID : {{ conversation.session_id }}
+                        </a>
+                        <div class="text-sand-12 text-sm">Last: {{ conversation.last_messages }}</div>
+                    </li>
+                    @endeach
+                    @else
+                    <li class="text-sand-12">No conversations found.</li>
+                    @endif
+                </ul>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+
+</html>
